@@ -8,13 +8,17 @@
 /* Configuration du body */
 body {
     display: grid;
-    grid-template-columns: 50px 1fr;
-    grid-template-rows: 15px 1fr 30px;
-    grid-template-areas:
+    grid-template-columns: 80px 1fr;
+    grid-template-rows: 40px 120px 1fr 40px;
+    grid-template-areas: 
     "bandeau bandeau"
-    "menu contenu"
+    "menu-haut contenu"
+    "menu-bas contenu"
     "pied pied";
     height: 100vh;
+    font-family: Arial, sans-serif;
+    gap: 2px;
+    background-color: #333;
 }
 
 /* Bandeau (header) */
@@ -27,14 +31,43 @@ body {
     color: #333;
     font-weight: bold
 }
-.menu {
-  grid-area: menu;
-  background-color: #ff69b4;
-  color: #333;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.menu-haut{
+    grid-area: menu-haut;
+    background-color: #8bc34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 0.9em;
+}
+.menu-bas{
+    grid-area: menu-bas;
+    background-color: #570000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px;
+    font-size: 0.9em;
+
+}
+.block-news{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 100px;
+    height: 100px;
+    background-color: #f44336;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    font-size: 0.9em;
+
 }
 /* Contenu principal */
 .contenu {
@@ -43,9 +76,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 20px;
     color: #333;
     font-size: 1.2em;
+    font-weight: bold;
+    position: relative;
 }
 
 /* Pied de page (footer) */
