@@ -1,0 +1,60 @@
+/* Reset de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Configuration du body */
+body {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    grid-template-rows: 15px 1fr 30px;
+    grid-template-areas:
+    "bandeau bandeau"
+    "menu contenu"
+    "pied pied";
+    height: 100vh;
+}
+
+/* Bandeau (header) */
+.bandeau {
+    grid-area: bandeau;
+    background-color: #00bcd4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold
+}
+.menu {
+  grid-area: menu;
+  background-color: #ff69b4;
+  color: #333;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Contenu principal */
+.contenu {
+    grid-area: contenu;
+    background-color: #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #333;
+    font-size: 1.2em;
+}
+
+/* Pied de page (footer) */
+.pied-de-page {
+    grid-area: pied;
+    background-color: #00e676;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+}
