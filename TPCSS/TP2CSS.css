@@ -18,7 +18,7 @@ body {
     height: 100vh;
     font-family: Arial, sans-serif;
     gap: 2px;
-    background-color: #333;
+    background-color: #000000;
 }
 
 /* Bandeau (header) */
@@ -48,7 +48,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: #333;
     font-weight: bold;
     padding: 10px;
     font-size: 0.9em;
@@ -56,17 +56,17 @@ body {
 }
 .block-news{
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0px;
+    right: 0px;
     width: 100px;
     height: 100px;
-    background-color: #f44336;
+    background-color: rgb(255, 0, 0);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
+    color: blue;
     font-weight: bold;
-    font-size: 0.9em;
+    font-size: 20px;
 
 }
 /* Contenu principal */
@@ -81,6 +81,10 @@ body {
     font-size: 1.2em;
     font-weight: bold;
     position: relative;
+}
+#po{
+    color: red;
+    padding: 30px;
 }
 
 /* Pied de page (footer) */
