@@ -1,131 +1,155 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
+ <html lang="en">
+ <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Layout CSS</title>
     <link rel="stylesheet" href="TP2CSS.css">
-</head>
-<body>
-    <header class="bandeau">
-        Bandeau
-    </header>
+    <title>Document</title>
+ </head>
+ </html>
+ <div class="table">
+        <div class="table_1">
+            <table>
+                <caption>
+                    FERARIE
+                </caption>
+                <thead>
+                    <tr>
+                        <th>auteur</th>
+                        <th>Nom de voiture</th>
+                        <th>Age</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Bryan Ortega</th>
+                        <td>ferari 14SD</td>
+                        <td>69 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Aaron Pilou</th>
+                        <td>RS6</td>
+                        <td>46 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Lamborginhi</th>
+                        <td>sevro</td>
+                        <td>17 ans</td>
+                    </tr>
+                    <tr>
+                        <th>viro</th>
+                        <td>clio 3</td>
+                        <td>162 ans</td>
+                    </tr>
+                    <tr>
+                        <th>audi sharlton</th>
+                        <td>audi rs7</td>
+                        <td>52 ans</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="text_table">
+            <span>vers tableau 2</span>
+        </div>
+        <div class="table_2">
 
-    <div class="menu-haut">
-        menu haut
+
+
+
+             <table>
+                <caption>
+                    FERARIE
+                </caption>
+                <thead>
+                    <tr>
+                        <th>auteur</th>
+                        <th>Nom de voiture</th>
+                        <th>Age</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Bryan Ortega</th>
+                        <td>ferari 14SD</td>
+                        <td>69 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Aaron Pilou</th>
+                        <td>RS6</td>
+                        <td>46 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Lamborginhi</th>
+                        <td>sevro</td>
+                        <td>17 ans</td>
+                    </tr>
+                    <tr>
+                        <th>viro</th>
+                        <td>clio 3</td>
+                        <td>162 ans</td>
+                    </tr>
+                    <tr>
+                        <th>audi sharlton</th>
+                        <td>audi rs7</td>
+                        <td>52 ans</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text_table1">
+            <span>Vers tableau 3</span>
+        </div>
+        <div class="table_3">
+
+
+
+             <table>
+                <caption>
+                    FERARIE
+                </caption>
+                <thead>
+                    <tr>
+                        <th>auteur</th>
+                        <th>Nom de voiture</th>
+                        <th>Age</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Bryan Ortega</th>
+                        <td>ferari 14SD</td>
+                        <td>69 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Aaron Pilou</th>
+                        <td>RS6</td>
+                        <td>46 ans</td>
+                    </tr>
+                    <tr>
+                        <th>Lamborginhi</th>
+                        <td>sevro</td>
+                        <td>17 ans</td>
+                    </tr>
+                    <tr>
+                        <th>viro</th>
+                        <td>clio 3</td>
+                        <td>162 ans</td>
+                    </tr>
+                    <tr>
+                        <th>audi sharlton</th>
+                        <td>audi rs7</td>
+                        <td>52 ans</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
-    <div class="menu-bas">
-         Menu bas
-    </div>
-    
-    <main class="contenu">
-        <p id="ui">
-         /* Reset de base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-        </p>
-     <p id="po">
-         poooooooooooooooo
-        </p>
 
-/* Configuration du body */
-body {
-    display: grid;
-    grid-template-columns: 80px 1fr;
-    grid-template-rows: 40px 120px 1fr 40px;
-    grid-template-areas: 
-    "bandeau bandeau"
-    "menu-haut contenu"
-    "menu-bas contenu"
-    "pied pied";
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    gap: 2px;
-    background-color: #333;
-}
 
-/* Bandeau (header) */
-.bandeau {
-    grid-area: bandeau;
-    background-color: #00bcd4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    font-weight: bold
-}
-.menu-haut{
-    grid-area: menu-haut;
-    background-color: #8bc34a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #000;
-    font-weight: bold;
-    padding: 10px;
-    font-size: 0.9em;
-}
-.menu-bas{
-    grid-area: menu-bas;
-    background-color: #570000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    font-weight: bold;
-    padding: 10px;
-    font-size: 0.9em;
 
-}
-.block-news{
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 100px;
-    height: 100px;
-    background-color: #f44336;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    font-weight: bold;
-    font-size: 0.9em;
 
-}
-/* Contenu principal */
-.contenu {
-    grid-area: contenu;
-    background-color: #ffd700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    color: #333;
-    font-size: 1.2em;
-    font-weight: bold;
-    position: relative;
-}
-
-/* Pied de page (footer) */
-.pied-de-page 
-    grid-area: pied;
-    background-color: #00e676;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    color: #333;
-    font-weight: bold;
-
-        <aside class="block-news">
-            Block news
-        </aside>
-    </main>
-
-    <footer class="pied-de-page">
-        Pied de page
-    </footer>
 </body>
+
 </html>
