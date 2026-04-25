@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat BTS</title>
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Connexion</h2>
+
+    
+    <div id="auth">
+        <input type="text" id="username" placeholder="Pseudo">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button onclick="login()">Se connecter</button>
+        <button onclick="register()">S'inscrire</button>
+    </div>
+
+    <!-- PARTIE CHAT -->
+    <div id="chat">
+        <h2>Chat</h2>
+
+        <div class="chat-container">
+
+            
+            <div class="chat-left">
+                <div id="messages"></div>
+
+                <div class="input-area">
+                    <input type="text" id="msg" placeholder="Message">
+                    <button onclick="sendMessage()">Envoyer</button>
+                </div>
+            </div>
+
+              
+            <div class="chat-right">
+                <h3>En ligne</h3>
+                <ul id="users"></ul>
+            </div>
+
+        </div>
+    </div>
+
+    <button onclick="logout()" style="margin-bottom:10px;">Se déconnecter</button>
+
+</div>
+
+<script src="main.js"></script>
+
+</body>
+</html>
