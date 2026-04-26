@@ -1,0 +1,146 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.3
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : localhost
+-- Généré le : dim. 26 avr. 2026 à 20:25
+-- Version du serveur : 11.8.3-MariaDB-0+deb13u1 from Debian
+-- Version de PHP : 8.4.11
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `Murmure`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `Messages`
+--
+
+CREATE TABLE `Messages` (
+  `id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `text` text NOT NULL,
+  `date` timestamp NULL DEFAULT current_timestamp(),
+  `salon_id` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `Messages`
+--
+
+INSERT INTO `Messages` (`id`, `username`, `text`, `date`, `salon_id`) VALUES
+(5, 'ryan', 'bonjour ca va ?', '2026-04-26 18:42:41', 1),
+(6, 'bikalou', 'ca va et toi', '2026-04-26 18:42:59', 1),
+(7, 'ryan', 'we cava trkl', '2026-04-26 18:43:34', 1),
+(8, 'Murmure', 'hmmm', '2026-04-26 18:44:02', 1),
+(9, 'Murmure', 'af', '2026-04-26 18:55:43', 1),
+(10, 'ryan', 'yes', '2026-04-26 18:57:16', 1),
+(11, '0000', 'HI', '2026-04-26 19:40:33', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `salons`
+--
+
+CREATE TABLE `salons` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) NOT NULL,
+  `created_by` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `salons`
+--
+
+INSERT INTO `salons` (`id`, `nom`, `created_by`, `created_at`) VALUES
+(1, 'général', 'system', '2026-04-26 15:48:20'),
+(3, 'st jus', 'Murmure', '2026-04-26 18:44:40'),
+(4, 'secret', 'ryan', '2026-04-26 18:58:09');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `username` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','createur','user') DEFAULT 'user'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_uca1400_ai_ci;
+
+--
+-- Déchargement des données de la table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
+(4, 'Murmure', '$2b$10$r.DIur8tRIe7WvfHE.kXI.Drdp2/KTH7LUBlgcN/sXgUv.mV9IOUq', 'admin'),
+(5, 'bikalou', '$2b$10$O.HntU/Bjcrd7DTDOzK1qu3UtSivQsM.AaqwqZssOYyiXkQV0mUPS', 'user'),
+(6, 'ryan', '$2b$10$N/DMOCEDV8F0BVHUIwJZT.je.4/l3LgZV3ktUmCECneGXzaHJy87y', 'createur'),
+(7, 'Elie', '$2b$10$9Mwah2tdA1fYkG0A.8Vlme7xPaXo67qv6Twl.s99T28YjkC.7Kj/e', 'user'),
+(8, '0000', '$2b$10$W8MWNfdc79e73lrGk3jc/.eVddyu9BJZ6P3mCV7c21gTu/Y8XA/R2', 'user');
+
+--
+-- Index pour les tables déchargées
+--
+
+--
+-- Index pour la table `Messages`
+--
+ALTER TABLE `Messages`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `salons`
+--
+ALTER TABLE `salons`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nom` (`nom`);
+
+--
+-- Index pour la table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
+-- AUTO_INCREMENT pour les tables déchargées
+--
+
+--
+-- AUTO_INCREMENT pour la table `Messages`
+--
+ALTER TABLE `Messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT pour la table `salons`
+--
+ALTER TABLE `salons`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT pour la table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
