@@ -1,16 +1,13 @@
+
 const express = require("express");
 const app = express();
-
 const { WebSocketServer } = require("ws");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 
-// middleware
 app.use(express.static('Public'));
 app.use(express.json());
 
-
-// BDD 
 const db = mysql.createConnection({
     host: "localhost",
     user: "Murmure",
@@ -18,193 +15,214 @@ const db = mysql.createConnection({
     database: "Murmure"
 });
 
-db.connect(err => {
-    if (err) throw err;
-    console.log("MySQL connecté");
-});
+// on lance la connexion si ca marche pas ca crash direct
+db.connect(err => { if (err) throw err; console.log("MySQL connecté"); });
 
-//  WEBSOCKET
-const ws = new WebSocketServer({ port: 8081 });
+// le serveur websocket sur le port 8081
+const wss = new WebSocketServer({ port: 8081 });
 
+// liste de tous les gens connectes
 let clients = [];
 
-function broadcastUsers() {
-    const users = clients
-        .filter(c => c.username)
-        .map(c => c.username);
+// envoie la liste des connectes a tout le monde
+function envoyerUtilisateurs() {
+    const users = clients.filter(c => c.username).map(c => ({ username: c.username, role: c.role }));
+    const msg = JSON.stringify({ type: "users", users });
+    // on envoie que si la connexion est bien ouverte
+    clients.forEach(c => c.readyState === 1 && c.send(msg));
+}
 
-    clients.forEach(client => {
-        client.send(JSON.stringify({
-            type: "users",
-            users: users
-        }));
+// envoie la liste des salons a tout le monde
+function envoyerSalons() {
+    db.query("SELECT * FROM salons ORDER BY id", (err, salons) => {
+        const msg = JSON.stringify({ type: "salons", salons });
+        clients.forEach(c => c.readyState === 1 && c.send(msg));
     });
 }
 
-ws.on("connection", (socket) => {
-
-    console.log("Client connecté");
+// quand quelqu'un se connecte
+wss.on("connection", (socket) => {
     clients.push(socket);
 
+    // quand on recoit un message du client
     socket.on("message", async (message) => {
 
         let data;
 
-        try {
-            data = JSON.parse(message);
-        } catch {
-            return;
-        }
+        // si le message est pas du json on ignore
+        try { data = JSON.parse(message); } catch { return; }
 
-        // REGISTER 
-if (data.type === "register") {
+        // INSCRIPTION
+        if (data.type === "register") {
+            const username = (data.username || "").trim();
+            const password = data.password || "";
 
-    db.query(
-        "SELECT * FROM users WHERE username = ?",
-        [data.username],
-        async (err, results) => {
+            // verification des champs
+            if (username.length < 3)
+                return socket.send(JSON.stringify({ type: "error", message: "Le pseudo doit faire au moins 3 caractères" }));
+            if (password.length < 8)
+                return socket.send(JSON.stringify({ type: "error", message: "Le mot de passe doit faire au moins 8 caractères" }));
 
-            if (results.length > 0) {
-                socket.send(JSON.stringify({
-                    type: "error",
-                    message: "Utilisateur déjà existant"
-                }));
-                return;
-            }
+            // on verifie que le pseudo existe pas deja
+            db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+                if (results.length > 0)
+                    return socket.send(JSON.stringify({ type: "error", message: "Pseudo déjà utilisé" }));
 
-            const hash = await bcrypt.hash(data.password, 10);
+                // le premier compte cree devient admin automatiquement
+                db.query("SELECT COUNT(*) as count FROM users", async (err, countRes) => {
+                    const role = countRes[0].count === 0 ? 'admin' : 'user';
 
-            db.query(
-                "INSERT INTO users (username, password) VALUES (?, ?)",
-                [data.username, hash],
-                () => {
+                    // on chiffre le mot de passe avant de le stocker
+                    const hash = await bcrypt.hash(password, 10);
 
-                    socket.username = data.username;
+                    db.query("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", [username, hash, role], () => {
+                        socket.username = username;
+                        socket.role = role;
 
-                    socket.send(JSON.stringify({
-                        type: "login_success"
-                    }));
+                        socket.send(JSON.stringify({ type: "login_success", username, role }));
+                        envoyerUtilisateurs();
 
-                    broadcastUsers();
-
-                    db.query(
-                        "SELECT * FROM Messages ORDER BY date DESC LIMIT 100",
-                        (err, results) => {
-
-                            socket.send(JSON.stringify({
-                                type: "history",
-                                messages: results.reverse()
-                            }));
-                        }
-                    );
-                }
-            );
-        }
-    );
-}   
-
-
-        // LOGIN 
-        if (data.type === "login") {
-
-            db.query(
-                "SELECT * FROM users WHERE username = ?",
-                [data.username],
-                async (err, results) => {
-
-                    if (results.length === 0) {
-                        socket.send(JSON.stringify({
-                            type: "error",
-                            message: "Utilisateur inconnu"
-                        }));
-                        return;
-                    }
-
-                    const user = results[0];
-                    const valid = await bcrypt.compare(data.password, user.password);
-
-                    if (!valid) {
-                        socket.send(JSON.stringify({
-                            type: "error",
-                            message: "Mot de passe incorrect"
-                        }));
-                        return;
-                    }
-
-                    socket.username = user.username;
-
-                    socket.send(JSON.stringify({
-                        type: "login_success"
-                        
-                    }));
-
-                    broadcastUsers();
-
-                    // HISTORIQUE
-                    db.query(
-                        "SELECT * FROM Messages ORDER BY date DESC LIMIT 100",
-                        (err, results) => {
-
-                            if (err) {
-                                console.error("Erreur MySQL :", err);
-                                return;
+                        // on envoie les salons et l'historique du premier salon
+                        db.query("SELECT * FROM salons ORDER BY id", (err, salons) => {
+                            socket.send(JSON.stringify({ type: "salons", salons }));
+                            if (salons[0]) {
+                                db.query("SELECT * FROM Messages WHERE salon_id = ? ORDER BY date DESC LIMIT 100", [salons[0].id], (err, msgs) => {
+                                    socket.send(JSON.stringify({ type: "history", messages: msgs.reverse(), salon_id: salons[0].id }));
+                                });
                             }
-
-                            socket.send(JSON.stringify({
-                                type: "history",
-                                messages: results.reverse()
-                            }));
-                        }
-                    );
-                }
-            );
+                        });
+                    });
+                });
+            });
         }
 
-        // MESSAGE 
-        if (data.type === "message") {
+        // CONNEXION
+        if (data.type === "login") {
+            const username = (data.username || "").trim();
+            const password = data.password || "";
 
+            // on cherche l'utilisateur dans la bdd
+            db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
+                if (results.length === 0)
+                    return socket.send(JSON.stringify({ type: "error", message: "Utilisateur inconnu" }));
+
+                const user = results[0];
+
+                // on compare le mot de passe avec le hash stocke
+                const valid = await bcrypt.compare(password, user.password);
+                if (!valid)
+                    return socket.send(JSON.stringify({ type: "error", message: "Mot de passe incorrect" }));
+
+                socket.username = user.username;
+                socket.role = user.role;
+
+                socket.send(JSON.stringify({ type: "login_success", username: user.username, role: user.role }));
+                envoyerUtilisateurs();
+
+                // pareil que pour le register on envoie les salons et l'historique
+                db.query("SELECT * FROM salons ORDER BY id", (err, salons) => {
+                    socket.send(JSON.stringify({ type: "salons", salons }));
+                    if (salons[0]) {
+                        db.query("SELECT * FROM Messages WHERE salon_id = ? ORDER BY date DESC LIMIT 100", [salons[0].id], (err, msgs) => {
+                            socket.send(JSON.stringify({ type: "history", messages: msgs.reverse(), salon_id: salons[0].id }));
+                        });
+                    }
+                });
+            });
+        }
+
+        // ENVOI D'UN MESSAGE
+        if (data.type === "message") {
+            // faut etre connecte pour envoyer
             if (!socket.username) return;
 
-            const username = socket.username;
+            const salon_id = data.salon_id || 1;
 
-            // sauvegarde
-            db.query(
-                "INSERT INTO Messages (username, text) VALUES (?, ?)",
-                [username, data.text]
-            );
+            // on sauvegarde le message dans la bdd
+            db.query("INSERT INTO Messages (username, text, salon_id) VALUES (?, ?, ?)", [socket.username, data.text, salon_id], (err, result) => {
 
-            // garder 100 messages max
-            db.query(`
-                DELETE FROM Messages 
-                WHERE id NOT IN (
-                    SELECT id FROM (
-                        SELECT id FROM Messages ORDER BY date DESC LIMIT 100
-                    ) tmp
-                )
-            `);
+                // on garde que les 100 derniers messages par salon
+                db.query(`
+                    DELETE FROM Messages WHERE salon_id = ? AND id NOT IN (
+                        SELECT id FROM (SELECT id FROM Messages WHERE salon_id = ? ORDER BY date DESC LIMIT 100) tmp
+                    )`, [salon_id, salon_id]);
 
-            // envoyer à tous
-            clients.forEach(client => {
-                client.send(JSON.stringify({
-                    type: "message",
-                    username: username,
-                    text: data.text
-                }));
+                // on envoie le message a tout le monde
+                const msgData = { type: "message", id: result.insertId, username: socket.username, text: data.text, salon_id, date: new Date() };
+                clients.forEach(c => c.readyState === 1 && c.send(JSON.stringify(msgData)));
+            });
+        }
+
+        // CHARGEMENT DE L'HISTORIQUE D'UN SALON
+        if (data.type === "get_history") {
+            if (!socket.username) return;
+
+            // on recupere les 100 derniers messages du salon demande
+            db.query("SELECT * FROM Messages WHERE salon_id = ? ORDER BY date DESC LIMIT 100", [data.salon_id], (err, msgs) => {
+                socket.send(JSON.stringify({ type: "history", messages: msgs.reverse(), salon_id: data.salon_id }));
+            });
+        }
+
+        // CREATION D'UN SALON
+        if (data.type === "create_salon") {
+            if (!socket.username) return;
+
+            // seuls les admin et createur peuvent creer des salons
+            if (socket.role !== 'admin' && socket.role !== 'createur')
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+
+            const nom = (data.nom || "").trim();
+            if (nom.length < 2)
+                return socket.send(JSON.stringify({ type: "error", message: "Nom du salon trop court" }));
+
+            db.query("INSERT INTO salons (nom, created_by) VALUES (?, ?)", [nom, socket.username], (err) => {
+                // si le nom existe deja mysql renvoie une erreur
+                if (err) return socket.send(JSON.stringify({ type: "error", message: "Salon déjà existant" }));
+                envoyerSalons();
+            });
+        }
+
+        // SUPPRESSION D'UN MESSAGE
+        if (data.type === "delete_message") {
+            // seul l'admin peut supprimer
+            if (!socket.username || socket.role !== 'admin')
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+
+            db.query("DELETE FROM Messages WHERE id = ?", [data.message_id], () => {
+                // on dit a tout le monde de supprimer ce message de leur ecran
+                const msg = JSON.stringify({ type: "message_deleted", message_id: data.message_id });
+                clients.forEach(c => c.readyState === 1 && c.send(msg));
+            });
+        }
+
+        // CHANGEMENT DE ROLE
+        if (data.type === "change_role") {
+            // seul l'admin peut changer les roles
+            if (!socket.username || socket.role !== 'admin')
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+
+            // on verifie que le role envoye est valide
+            if (!['admin', 'createur', 'user'].includes(data.role)) return;
+
+            db.query("UPDATE users SET role = ? WHERE username = ?", [data.role, data.target], () => {
+
+                // si la personne est connectee on met a jour son role direct
+                const target = clients.find(c => c.username === data.target);
+                if (target) {
+                    target.role = data.role;
+                    target.send(JSON.stringify({ type: "role_updated", role: data.role }));
+                }
+
+                envoyerUtilisateurs();
             });
         }
     });
 
-    // DECONNEXION 
+    // quand quelqu'un se deconnecte on le retire de la liste
     socket.on("close", () => {
-        console.log("Client déconnecté");
-
         clients = clients.filter(c => c !== socket);
-        broadcastUsers();
+        envoyerUtilisateurs();
     });
 });
-
+app.listen(3000, () => console.log("Serveur HTTP lancé sur http://localhost:3000"));
 console.log("Serveur WebSocket lancé sur ws://localhost:8081");
-
-app.listen(3000, () => {
-    console.log("Serveur HTTP lancé sur http://localhost:3000");
-});

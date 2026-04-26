@@ -2,54 +2,80 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Chat BTS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Murmure</title>
     <link rel="stylesheet" href="main.css">
 </head>
-
 <body>
 
-<div class="container">
-
-    <h2>Connexion</h2>
-
-    
-    <div id="auth">
-        <input type="text" id="username" placeholder="Pseudo">
+<div id="auth-screen">
+    <div class="auth-box">
+        <div class="logo">
+            <img src="https://i.imgur.com/ZourS9U.png" alt="logo">
+            <span>MURMURE</span>
+        </div>
+        <p class="auth-subtitle">Bienvenue. Chuchotez vos secrets.</p>
+        <input type="text" id="username" placeholder="Pseudo" autocomplete="off">
         <input type="password" id="password" placeholder="Mot de passe">
-        <button onclick="login()">Se connecter</button>
-        <button onclick="register()">S'inscrire</button>
+        <div id="auth-error" class="auth-error"></div>
+        <button onclick="login()" class="btn-primary">Se connecter</button>
+        <button onclick="register()" class="btn-secondary">Créer un compte</button>
     </div>
+</div>
 
-    <!-- PARTIE CHAT -->
-    <div id="chat">
-        <h2>Chat</h2>
+<div id="chat-screen" style="display:none">
 
-        <div class="chat-container">
-
-            
-            <div class="chat-left">
-                <div id="messages"></div>
-
-                <div class="input-area">
-                    <input type="text" id="msg" placeholder="Message">
-                    <button onclick="sendMessage()">Envoyer</button>
-                </div>
-            </div>
-
-              
-            <div class="chat-right">
-                <h3>En ligne</h3>
-                <ul id="users"></ul>
-            </div>
-
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="https://i.imgur.com/ZourS9U.png" alt="logo">
+            <span>MURMURE</span>
+        </div>
+        <div class="salon-label">SALONS</div>
+        <ul id="salon-list"></ul>
+        <div id="create-salon-area" style="display:none">
+            <input type="text" id="new-salon-name" placeholder="Nom du salon">
+            <button onclick="createSalon()" class="btn-create">+ Créer</button>
+        </div>
+        <div class="sidebar-user">
+            <span id="sidebar-username"></span>
+            <span id="sidebar-role"></span>
+            <button onclick="logout()" class="btn-logout">Déco</button>
         </div>
     </div>
 
-    <button onclick="logout()" style="margin-bottom:10px;">Se déconnecter</button>
+    <div class="chat-main">
+        <div class="chat-topbar">
+            <span id="current-salon-name"># général</span>
+            <div id="admin-panel" style="display:none">
+                <button onclick="toggleRolePanel()" class="btn-admin">Gérer les rôles</button>
+            </div>
+        </div>
+        <div id="messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="msg" placeholder="Murmurer un message..." onkeydown="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()" class="btn-send">Envoyer</button>
+        </div>
+    </div>
+
+    <div class="users-sidebar">
+        <div class="users-header">EN LIGNE</div>
+        <ul id="users"></ul>
+        <div id="role-panel" style="display:none">
+            <div class="role-panel-title">Gérer les rôles</div>
+            <select id="role-target-user">
+                <option value="">Choisir un user</option>
+            </select>
+            <select id="role-value">
+                <option value="user">Utilisateur</option>
+                <option value="createur">Créateur</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button onclick="changeRole()" class="btn-primary" style="margin-top:8px;width:100%">Appliquer</button>
+        </div>
+    </div>
 
 </div>
 
 <script src="main.js"></script>
-
 </body>
 </html>
