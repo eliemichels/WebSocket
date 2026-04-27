@@ -18,7 +18,7 @@ function connecterWS(callback) {
         socket.close();
     }
 
-    // on prend l'ip de la page pour pas la coder en dur
+    // on prend l'ip de la page pour pas la coder en dur mdr
     const wsUrl = `ws://${window.location.hostname}:8081`;
     socket = new WebSocket(wsUrl);
     socket.onopen = () => callback();
