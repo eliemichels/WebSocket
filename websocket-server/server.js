@@ -15,7 +15,7 @@ const db = mysql.createConnection({
     database: "Murmure"
 });
 
-// on lance la connexion si ca marche pas ca crash direct
+// on lance la connexion if marche ... else crash direct
 db.connect(err => { if (err) throw err; console.log("MySQL connecté"); });
 
 // le serveur websocket sur le port 8081
@@ -24,7 +24,7 @@ const wss = new WebSocketServer({ port: 8081 });
 // liste de tous les gens connectes
 let clients = [];
 
-// envoie la liste des connectes a tout le monde
+// envoie la liste a tout le monde
 function envoyerUtilisateurs() {
     const users = clients.filter(c => c.username).map(c => ({ username: c.username, role: c.role }));
     const msg = JSON.stringify({ type: "users", users });
@@ -101,14 +101,14 @@ wss.on("connection", (socket) => {
             const username = (data.username || "").trim();
             const password = data.password || "";
 
-            // on cherche l'utilisateur dans la bdd
+            // recherche utilisateur
             db.query("SELECT * FROM users WHERE username = ?", [username], async (err, results) => {
                 if (results.length === 0)
                     return socket.send(JSON.stringify({ type: "error", message: "Utilisateur inconnu" }));
 
                 const user = results[0];
 
-                // on compare le mot de passe avec le hash stocke
+                // on compare le mdp avec le hash 
                 const valid = await bcrypt.compare(password, user.password);
                 if (!valid)
                     return socket.send(JSON.stringify({ type: "error", message: "Mot de passe incorrect" }));
@@ -119,7 +119,7 @@ wss.on("connection", (socket) => {
                 socket.send(JSON.stringify({ type: "login_success", username: user.username, role: user.role }));
                 envoyerUtilisateurs();
 
-                // pareil que pour le register on envoie les salons et l'historique
+                // pareil que pour le register ont envoie les salon et l'historique
                 db.query("SELECT * FROM salons ORDER BY id", (err, salons) => {
                     socket.send(JSON.stringify({ type: "salons", salons }));
                     if (salons[0]) {
@@ -147,7 +147,7 @@ wss.on("connection", (socket) => {
                         SELECT id FROM (SELECT id FROM Messages WHERE salon_id = ? ORDER BY date DESC LIMIT 100) tmp
                     )`, [salon_id, salon_id]);
 
-                // on envoie le message a tout le monde
+                // on envoie le message a tous
                 const msgData = { type: "message", id: result.insertId, username: socket.username, text: data.text, salon_id, date: new Date() };
                 clients.forEach(c => c.readyState === 1 && c.send(JSON.stringify(msgData)));
             });
