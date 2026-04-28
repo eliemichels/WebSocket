@@ -27,13 +27,13 @@ function connecterWS(callback) {
         const data = JSON.parse(event.data);
 
         if (data.type === "login_success") {
-            currentUser = data.username;
+             currentUser = data.username;
             currentRole = data.role;
-            localStorage.setItem("murmure_user", data.username);
+                localStorage.setItem("murmure_user", data.username);
             localStorage.setItem("murmure_pass", document.getElementById("password").value);
-            document.getElementById("auth-screen").style.display = "none";
+             document.getElementById("auth-screen").style.display = "none";
             document.getElementById("chat-screen").style.display = "flex";
-            document.getElementById("sidebar-username").textContent = data.username;
+                document.getElementById("sidebar-username").textContent = data.username;
             document.getElementById("sidebar-role").textContent = afficherRole(data.role);
 
             // on affiche les boutons selon le role
@@ -92,13 +92,13 @@ function connecterWS(callback) {
 
 function afficherRole(role) {
     if (role === "admin") return "Admin";
-    if (role === "createur") return "Createur";
+     if (role === "createur") return "Createur";
     return "Utilisateur";
 }
 
 function login() {
-    const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
+             const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
     document.getElementById("auth-error").textContent = "";
     connecterWS(() => {
         socket.send(JSON.stringify({ type: "login", username, password }));
@@ -113,7 +113,7 @@ function login() {
 
 function register() {
     const username = document.getElementById("username").value.trim();
-    const password = document.getElementById("password").value;
+            const password = document.getElementById("password").value;
     document.getElementById("auth-error").textContent = "";
 
     // validation avant meme d'envoyer au serveur
@@ -141,7 +141,7 @@ function sendMessage() {
 function ajouterMessage(id, text, username, date) {
     const div = document.getElementById("messages");
     const message = document.createElement("div");
-    message.classList.add("message");
+             message.classList.add("message");
     message.id = "msg-" + id;
 
     const time = date ? new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
@@ -156,7 +156,7 @@ function ajouterMessage(id, text, username, date) {
     message.innerHTML = `
         <div class="msg-header">
             <span class="msg-username ${isMe ? 'me' : ''}">${username}</span>
-            <span class="msg-time">${time}</span>
+             <span class="msg-time">${time}</span>
             ${deleteBtn}
         </div>
         <div class="msg-text">${nettoyerHtml(text)}</div>
@@ -179,7 +179,7 @@ function mettreAJourUtilisateurs(users) {
     const list = document.getElementById("users");
     list.innerHTML = "";
     const select = document.getElementById("role-target-user");
-    select.innerHTML = '<option value="">Choisir un user</option>';
+       select.innerHTML = '<option value="">Choisir un user</option>';
 
     users.forEach(u => {
         const li = document.createElement("li");
@@ -206,7 +206,7 @@ function mettreAJourSalons(salons) {
         list.appendChild(li);
     });
 
-    // si on a pas encore de salon actif on charge le premier
+            // si on a pas encore de salon actif on charge le premier
     if (!currentSalonId && salons.length > 0) {
         changerSalon(salons[0].id, salons[0].nom);
     }
@@ -215,7 +215,7 @@ function mettreAJourSalons(salons) {
 function changerSalon(id, nom) {
     currentSalonId = id;
     document.getElementById("current-salon-name").textContent = "# " + nom;
-    document.getElementById("messages").innerHTML = "";
+                  document.getElementById("messages").innerHTML = "";
 
     document.querySelectorAll(".salon-item").forEach(li => {
         li.classList.toggle("active", li.textContent === "# " + nom);
@@ -237,24 +237,24 @@ function toggleRolePanel() {
 }
 
 function changeRole() {
-    const target = document.getElementById("role-target-user").value;
+ const target = document.getElementById("role-target-user").value;
     const role = document.getElementById("role-value").value;
-    if (!target) return;
+         if (!target) return;
     socket.send(JSON.stringify({ type: "change_role", target, role }));
 }
 
 function logout() {
     if (socket) socket.close();
-    localStorage.removeItem("murmure_user");
+     localStorage.removeItem("murmure_user");
     localStorage.removeItem("murmure_pass");
     currentUser = "";
     currentRole = "";
     currentSalonId = null;
     document.getElementById("chat-screen").style.display = "none";
-    document.getElementById("auth-screen").style.display = "flex";
+      document.getElementById("auth-screen").style.display = "flex";
     document.getElementById("messages").innerHTML = "";
     document.getElementById("users").innerHTML = "";
-    document.getElementById("username").value = "";
+         document.getElementById("username").value = "";
     document.getElementById("password").value = "";
     document.getElementById("create-salon-area").style.display = "none";
     document.getElementById("admin-panel").style.display = "none";
