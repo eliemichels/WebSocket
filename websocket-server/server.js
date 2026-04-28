@@ -169,7 +169,7 @@ wss.on("connection", (socket) => {
 
             // seuls les admin et createur peuvent creer des salons
             if (socket.role !== 'admin' && socket.role !== 'createur')
-                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée mdr" }));
 
             const nom = (data.nom || "").trim();
             if (nom.length < 2)
@@ -186,7 +186,7 @@ wss.on("connection", (socket) => {
         if (data.type === "delete_message") {
             // seul l'admin peut supprimer
             if (!socket.username || socket.role !== 'admin')
-                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée mdr" }));
 
             db.query("DELETE FROM Messages WHERE id = ?", [data.message_id], () => {
                 // on dit a tout le monde de supprimer ce message de leur ecran
@@ -199,7 +199,7 @@ wss.on("connection", (socket) => {
         if (data.type === "change_role") {
             // seul l'admin peut changer les roles
             if (!socket.username || socket.role !== 'admin')
-                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée" }));
+                return socket.send(JSON.stringify({ type: "error", message: "Permission refusée mdr" }));
 
             // on verifie que le role envoye est valide
             if (!['admin', 'createur', 'user'].includes(data.role)) return;
